@@ -14,6 +14,7 @@ In addition to LC3, following features of LC3 Plus are proposed:
 ## Overview
 
 The directory layout is as follows :
+- app:          Android Studio project for building Vuzix JNI layer (Vuzix addition)
 - include:      Library interface
 - src:          Source files
 - tools:        Standalone encoder/decoder tools
@@ -22,6 +23,49 @@ The directory layout is as follows :
 - fuzz:         Roundtrip fuzz testing harness
 - build:        Building outputs
 - bin:          Compilation output
+
+## Vuzix JNI Wrapper
+(Vuzix addition)
+
+The Vuzix JNI layer allows this coded to be called from Android Java/Kotlin
+apps by including the generated .aar.
+
+### How to build JNI
+```sh
+$ .\gradlew bundleReleaseAar
+```
+The output will be in app/build/outputs/aar/
+
+### How to use the JNI
+```java
+import com.vuzix.jnilc3.Lc3Codec;
+
+// These are user adjustable
+int frameMs = 10;   // 10ms Frames
+int pcmSampleRateHz = 16000;
+int encodedLc3BitRate = 32000;
+int upsampleHz = 0;
+// Remain fixed:
+int frameUs = frameMs * 1000;
+int lc3BitsPerMs = encodedLc3BitRate/1000;
+int lc3BytesPerFrame = (lc3BitsPerMs * frameMs) / 8;
+int pcmSamplesPerMs = pcmSampleRateHz/1000;
+int pcsBytesPerFrame = 2 * (pcmSamplesPerMs * frameMs) / 8; // 2 bytes per sample, PCM16
+
+Lc3Codec.Decoder lc3Decoder  = new Lc3Codec.Decoder(frameUs, pcmSampleRateHz, upsampleHz);
+while (1) {
+    byte[] lc3frame = new byte[lc3BytesPerFrame]; // TODO: Fill this with data
+    byte[] pcmData = new byte[pcsBytesPerFrame];
+    // Must process full frames only (the size of lc3frame is used to compute the encoded bitrate)
+    int status = lc3Decoder.decodeLc3(lc3frame, Lc3Codec.lc3_pcm_format.LC3_PCM_FORMAT_S16, pcmData, 1);
+    if (status ==0) {
+        // Do something with the data
+    }
+}
+lc3Decoder.close();
+```
+
+# Original Documentation
 
 ## How to build
 

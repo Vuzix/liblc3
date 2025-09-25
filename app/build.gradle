@@ -1,0 +1,58 @@
+plugins {
+    id('com.android.library')
+}
+
+android {
+    namespace 'com.vuzix.jnilc3'
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 31
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+        externalNativeBuild {
+            cmake {
+                // you can add compiler flags here
+                cppFlags "-std=c++17"
+            }
+        }
+        ndk {
+            moduleName "jnilc3"
+            abiFilters "arm64-v8a", "armeabi-v7a"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    // This block is used for customizing the output file names for library modules
+    libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            def newName = "JniLc3-${variant.buildType.name}.aar"
+            if (variant.buildType.name == "release") {
+                newName = "JniLc3.aar"
+            }
+            output.outputFileName = newName
+        }
+    }
+}
+
+dependencies {
+}

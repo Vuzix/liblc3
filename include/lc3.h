@@ -117,7 +117,7 @@
  *
  *
  * --- How to encode / decode ---
- *
+
  * An encoder / decoder context needs to be setup. This context keeps states
  * on the current stream to proceed, and samples that overlapped across
  * frames.
