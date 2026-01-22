@@ -20,7 +20,7 @@
  * Low Complexity Communication Codec (LC3) - C++ interface
  */
 
-#ifndef __LC3_CPP_H
+#if !defined(__LC3_CPP_H) && defined(__cplusplus)
 #define __LC3_CPP_H
 
 #include <cassert>
